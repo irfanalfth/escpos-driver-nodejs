@@ -31,9 +31,16 @@
     event.preventDefault()
     server = document.getElementById("server").value
     text = document.getElementById("text").value
-    axios.post(`${server}/printStruck`, {
-        "text": text
-      })
+    // axios.post(`${server}/printStruck`, {
+    //     "text": text
+    //   })
+    //   .then(function (response) {
+    //     alert(response.data.status)
+    //   })
+    //   .catch(function (error) {
+    //     alert(error)
+    //   });
+    axios.post(`${server}/printSummary`, {})
       .then(function (response) {
         alert(response.data.status)
       })
