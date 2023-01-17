@@ -40,7 +40,14 @@
     //   .catch(function (error) {
     //     alert(error)
     //   });
-    axios.post(`${server}/printSummary`, {})
+    // axios.post(`${server}/printSummary`, {})
+    //   .then(function (response) {
+    //     alert(response.data.status)
+    //   })
+    //   .catch(function (error) {
+    //     alert(error)
+    //   });
+    axios.post(`${server}/printShiftReport`, {})
       .then(function (response) {
         alert(response.data.status)
       })
