@@ -23,7 +23,7 @@ app.post("/printStruck", (req, res) => {
   // console.log(req.body);
   // console.log(device);
   let response = req.body;
-  // console.log(response);
+  console.log(response);
   printStruck(
     response.carts,
     response.subTotal,
@@ -35,7 +35,8 @@ app.post("/printStruck", (req, res) => {
     response.tanggal,
     response.noTransaksi,
     response.kasir,
-    response.customer
+    response.customer,
+    response.agency
   );
 });
 app.post("/printSummary", (req, res) => {
@@ -104,7 +105,8 @@ const printStruck = (
   tanggal,
   noTransaksi,
   kasir,
-  customer
+  customer,
+  agency
 ) => {
   device.open(function () {
     printer
@@ -112,15 +114,13 @@ const printStruck = (
       .align("CT")
       .style("B")
       .size(1.5, 1.5)
-      .text("ALIN POS")
-
+      .text(agency.name)
       .newLine()
 
       .style("NORMAL")
       .size(0.5, 0.5)
-      .text("Gg. Dipangga IX, Rajabasa, Kec. Rajabasa, Kota Bandar Lampung")
-      .text("085366125569")
-
+      .text(agency.address)
+      .text(agency.noHp)
       .style("NORMAL")
       .size(0.5, 0.5)
       .drawLine()
@@ -147,13 +147,13 @@ const printStruck = (
       .tableCustom([
         { text: "Customer", align: "LEFT", width: 0.3, style: "NORMAL" },
         { text: ":", align: "LEFT", width: 0.1, style: "NORMAL" },
-        { text: kasir, align: "LEFT", width: 0.3, style: "NORMAL" },
+        { text: customer, align: "LEFT", width: 0.3, style: "NORMAL" },
       ])
 
       .tableCustom([
         { text: "Kasir", align: "LEFT", width: 0.3, style: "NORMAL" },
         { text: ":", align: "LEFT", width: 0.1, style: "NORMAL" },
-        { text: customer, align: "LEFT", width: 0.3, style: "NORMAL" },
+        { text: kasir, align: "LEFT", width: 0.3, style: "NORMAL" },
       ])
 
       .style("NORMAL")
@@ -181,13 +181,13 @@ const printStruck = (
         },
         { text: item.name, align: "LEFT", width: 0.3, style: "NORMAL" },
         {
-          text: convertToRupiah(item.price, ""),
+          text: convertToRupiah(item.price, "Rp."),
           align: "RIGHT",
           width: 0.3,
           style: "NORMAL",
         },
         {
-          text: convertToRupiah(item.price * item.qty, ""),
+          text: convertToRupiah(item.price * item.qty, "Rp."),
           align: "RIGHT",
           width: 0.3,
           style: "NORMAL",
@@ -198,27 +198,57 @@ const printStruck = (
       .drawLine()
       .tableCustom([
         { text: "Sub Total", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: subTotal, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(subTotal, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Pajak", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: pajak, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(pajak, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Diskon", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: diskon, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: "-(" + convertToRupiah(diskon, "Rp.") + ")",
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Total", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: total, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(total, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Bayar", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: bayar, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(bayar, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Kembali", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: kembalian, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(kembalian, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .drawLine()
       .newLine()
@@ -232,7 +262,7 @@ const printStruck = (
       .newLine()
       .style("NORMAL")
       .size(0.5, 0.5)
-      .text("Created by : ALIN POS pada " + tanggal)
+      .text("Created by : " + agency.name + " pada " + tanggal)
       .newLine()
       .newLine()
       .marginBottom(15)
@@ -240,6 +270,843 @@ const printStruck = (
       .close();
   });
 };
+
+// const printSummary = (
+//   cashierID = "#123214",
+//   name = "kasir 1",
+//   shift = "Siang",
+//   totalSales = convertToRupiah(3549000),
+//   totalDisc = "-(" + convertToRupiah(0) + ")",
+//   totalTax = convertToRupiah(0),
+//   totalServCharge = convertToRupiah(0),
+//   totalAdjustment = convertToRupiah(0),
+//   total = convertToRupiah(3549000),
+//   numInv = 5,
+//   AvgInvBill = convertToRupiah(23923)
+// ) => {
+//   device.open(function () {
+//     printer
+//       .font("B")
+//       .align("CT")
+//       .style("B")
+//       .size(1.5, 1.5)
+//       .text("SALES SUMMARY")
+
+//       .newLine()
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+
+//       .tableCustom([
+//         { text: "Tanggal", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: "15/01/2023" + " - " + currentDate(),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "ID", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: cashierID,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "Name", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: name,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "Shift", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: shift,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+//       .tableCustom([
+//         { text: "Total Sales", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: totalSales,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "Total Discount", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: totalDisc,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Total Service Charge",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: totalServCharge,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Total Tax",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: totalTax,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Total Adjustment",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: totalAdjustment,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Total",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: total,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+
+//       .newLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Invoices",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: "",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+//       .tableCustom([
+//         {
+//           text: "Number of Inv",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: numInv,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Average Bill per Inv",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: AvgInvBill,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .newLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Void Summary",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: "",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+//       .tableCustom([
+//         {
+//           text: "Number of Invoices",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(1929392),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Number of Items",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(1929392),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Total",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: convertToRupiah(7328432),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+
+//       .newLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Summary by Salestype",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: "",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+//       .tableCustom([
+//         {
+//           text: "Nominal",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(1929392),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Total",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: convertToRupiah(7328432),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+
+//       .newLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Summary by Payment",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: "",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+//       .tableCustom([
+//         {
+//           text: "Cash",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(1929392),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Gopay",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(1929392),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Total",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: convertToRupiah(7328432),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+
+//       .newLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Summary by Product",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: "",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .newLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "FOOD",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: "",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+//       .tableCustom([
+//         { text: "Product", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         { text: "Qty", align: "RIGHT", width: 0.1, style: "NORMAL" },
+//         { text: "Sub Total", align: "RIGHT", width: 0.3, style: "NORMAL" },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine();
+
+//     for (let i = 0; i < 10; i++) {
+//       printer
+//         .style("NORMAL")
+//         .size(0.05, 0.05)
+//         .tableCustom([
+//           {
+//             text: faker.faker.commerce.productName(),
+//             align: "LEFT",
+//             width: 0.5,
+//             style: "NORMAL",
+//           },
+//           {
+//             text: faker.faker.random.numeric(),
+//             align: "RIGHT",
+//             width: 0.1,
+//             style: "NORMAL",
+//           },
+//           {
+//             text: convertToRupiah(200000),
+//             align: "RIGHT",
+//             width: 0.3,
+//             style: "NORMAL",
+//           },
+//         ]);
+//     }
+
+//     printer
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("B")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Total",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: total,
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+
+//       .newLine()
+//       .newLine()
+//       .newLine()
+//       .marginBottom(15)
+//       .cut()
+//       .close();
+//   });
+// };
+
+// const printShiftReport = (
+//   cashierID = "#123214",
+//   name = "kasir 1",
+//   shift = "Siang",
+//   totalSales = convertToRupiah(3549000),
+//   totalDisc = "-(" + convertToRupiah(0) + ")",
+//   totalTax = convertToRupiah(0),
+//   totalServCharge = convertToRupiah(0),
+//   totalAdjustment = convertToRupiah(0),
+//   total = convertToRupiah(3549000),
+//   numInv = 5,
+//   AvgInvBill = convertToRupiah(23923)
+// ) => {
+//   device.open(function () {
+//     printer
+//       .font("B")
+//       .align("CT")
+//       .style("B")
+//       .size(1.5, 1.5)
+//       .text("SHIFT REPORT")
+
+//       .newLine()
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+
+//       .tableCustom([
+//         { text: "Toko", align: "LEFT", width: 0.3, style: "NORMAL" },
+//         { text: ":", align: "LEFT", width: 0.1, style: "NORMAL" },
+//         {
+//           text: "Toko2-An",
+//           align: "RIGHT",
+//           width: 0.6,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "POS", align: "LEFT", width: 0.3, style: "NORMAL" },
+//         { text: ":", align: "LEFT", width: 0.1, style: "NORMAL" },
+//         {
+//           text: "POS Toko",
+//           align: "RIGHT",
+//           width: 0.6,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("NORMAL")
+//       .size(0.05, 0.05)
+//       .tableCustom([
+//         {
+//           text: "Shift dibuka",
+//           align: "LEFT",
+//           width: 0.3,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: ":",
+//           align: "LEFT",
+//           width: 0.1,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: "Sujarwo",
+//           align: "RIGHT",
+//           width: 0.6,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: "17/01/2023 12.22",
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("I")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Laci Uang",
+//           align: "CENTER",
+//           width: 1,
+//           style: "I",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .tableCustom([
+//         { text: "Modal Awal", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: convertToRupiah(23423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Pembayaran Tunai",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Uang yang dikembalikan",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Pemasukan",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Pengeluaran",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Total Uang Tunai",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .style("I")
+//       .size(0.5, 0.5)
+//       .tableCustom([
+//         {
+//           text: "Ringkasan Penjualan",
+//           align: "CENTER",
+//           width: 1,
+//           style: "I",
+//         },
+//       ])
+
+//       .style("NORMAL")
+//       .size(0.5, 0.5)
+//       .drawLine()
+
+//       .tableCustom([
+//         {
+//           text: "Penjualan Kotor",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Pengembalian",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "Diskon", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: convertToRupiah(23423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Penjualan Bersih",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "B",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Tunai",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "E-Money",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Kartu",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         {
+//           text: "Pajak",
+//           align: "LEFT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//         {
+//           text: convertToRupiah(223423),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+
+//       .newLine()
+//       .newLine()
+//       .newLine()
+//       .marginBottom(15)
+//       .cut()
+//       .close();
+//   });
+// };
 
 const printSummary = (
   cashierID = "#123214",
