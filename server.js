@@ -21,7 +21,7 @@ app.post("/printStruck", (req, res) => {
   // console.log(req.body);
   // console.log(device);
   let response = req.body;
-  // console.log(response);
+  console.log(response);
   printStruck(
     response.carts,
     response.subTotal,
@@ -33,7 +33,8 @@ app.post("/printStruck", (req, res) => {
     response.tanggal,
     response.noTransaksi,
     response.kasir,
-    response.customer
+    response.customer,
+    response.agency
   );
 });
 
@@ -71,7 +72,8 @@ const printStruck = (
   tanggal,
   noTransaksi,
   kasir,
-  customer
+  customer,
+  agency
 ) => {
   device.open(function () {
     printer
@@ -79,12 +81,12 @@ const printStruck = (
       .align("CT")
       .style("B")
       .size(1.5, 1.5)
-      .text("ALIN POS")
+      .text(agency.name)
       .newLine()
       .style("NORMAL")
       .size(0.5, 0.5)
-      .text("Gg. Dipangga IX, Rajabasa, Kec. Rajabasa, Kota Bandar Lampung")
-      .text("085366125569")
+      .text(agency.address)
+      .text(agency.noHp)
       .style("NORMAL")
       .size(0.5, 0.5)
       .drawLine()
@@ -108,12 +110,12 @@ const printStruck = (
       .tableCustom([
         { text: "Customer", align: "LEFT", width: 0.3, style: "NORMAL" },
         { text: ":", align: "LEFT", width: 0.1, style: "NORMAL" },
-        { text: kasir, align: "LEFT", width: 0.3, style: "NORMAL" },
+        { text: customer, align: "LEFT", width: 0.3, style: "NORMAL" },
       ])
       .tableCustom([
         { text: "Kasir", align: "LEFT", width: 0.3, style: "NORMAL" },
         { text: ":", align: "LEFT", width: 0.1, style: "NORMAL" },
-        { text: customer, align: "LEFT", width: 0.3, style: "NORMAL" },
+        { text: kasir, align: "LEFT", width: 0.3, style: "NORMAL" },
       ])
       .style("NORMAL")
       .size(0.5, 0.5)
@@ -137,13 +139,13 @@ const printStruck = (
         },
         { text: item.name, align: "LEFT", width: 0.3, style: "NORMAL" },
         {
-          text: convertToRupiah(item.price, ""),
+          text: convertToRupiah(item.price, "Rp."),
           align: "RIGHT",
           width: 0.3,
           style: "NORMAL",
         },
         {
-          text: convertToRupiah(item.price * item.qty, ""),
+          text: convertToRupiah(item.price * item.qty, "Rp."),
           align: "RIGHT",
           width: 0.3,
           style: "NORMAL",
@@ -154,27 +156,57 @@ const printStruck = (
       .drawLine()
       .tableCustom([
         { text: "Sub Total", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: subTotal, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(subTotal, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Pajak", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: pajak, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(pajak, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Diskon", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: diskon, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: "-(" + convertToRupiah(diskon, "Rp.") + ")",
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Total", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: total, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(total, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Bayar", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: bayar, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(bayar, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .tableCustom([
         { text: "Kembali", align: "LEFT", width: 0.5, style: "NORMAL" },
-        { text: kembalian, align: "RIGHT", width: 0.5, style: "NORMAL" },
+        {
+          text: convertToRupiah(kembalian, "Rp."),
+          align: "RIGHT",
+          width: 0.5,
+          style: "NORMAL",
+        },
       ])
       .drawLine()
       .newLine()
@@ -188,7 +220,7 @@ const printStruck = (
       .newLine()
       .style("NORMAL")
       .size(0.5, 0.5)
-      .text("Created by : ALIN POS pada " + tanggal)
+      .text("Created by : " + agency.name + " pada " + tanggal)
       .newLine()
       .newLine()
       .marginBottom(15)
