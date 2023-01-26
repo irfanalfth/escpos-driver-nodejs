@@ -18,10 +18,13 @@ app.use(bodyParser.json());
 
 const port = 4000;
 
+http.listen(port, () => {
+  console.log(`Printer: http://localhost:${port}`);
+  // console.log(escpos.USB());
+});
+
 app.post("/printStruck", (req, res) => {
   res.json({ status: "success" });
-  // console.log(req.body);
-  // console.log(device);
   let response = req.body;
   console.log(response);
   printStruck(
@@ -39,30 +42,25 @@ app.post("/printStruck", (req, res) => {
     response.agency
   );
 });
-app.post("/printSummary", (req, res) => {
-  res.json({ status: "success" });
-  // console.log(req.body);
-  // console.log(device);
-  let response = req.body;
+// app.post("/printSummary", (req, res) => {
+//   res.json({ status: "success" });
+//   // console.log(req.body);
+//   // console.log(device);
+//   let response = req.body;
 
-  // console.log(response);
-  printSummary();
-});
+//   // console.log(response);
+//   printSummary();
+// });
 
-app.post("/printShiftReport", (req, res) => {
-  res.json({ status: "success" });
-  // console.log(req.body);
-  // console.log(device);
-  let response = req.body;
+// app.post("/printShiftReport", (req, res) => {
+//   res.json({ status: "success" });
+//   // console.log(req.body);
+//   // console.log(device);
+//   let response = req.body;
 
-  // console.log(response);
-  printShiftReport();
-});
-
-http.listen(port, () => {
-  console.log(`Printer: http://localhost:${port}`);
-  // console.log(escpos.USB());
-});
+//   // console.log(response);
+//   printShiftReport();
+// });
 
 const convertToRupiah = (number, currency = "Rp. ") => {
   if (number) {
@@ -267,6 +265,7 @@ const printStruck = (
       .newLine()
       .marginBottom(15)
       .cut()
+      .cashdraw()
       .close();
   });
 };
