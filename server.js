@@ -64,6 +64,7 @@ app.post("/printStruck", (req, res) => {
 
 const convertToRupiah = (number, currency = "Rp. ") => {
   if (number) {
+    console.log(number);
     var rupiah = "";
     var numberrev = number.toString().split("").reverse().join("");
     for (var i = 0; i < numberrev.length; i++)
@@ -112,13 +113,13 @@ const printStruck = (
       .align("CT")
       .style("B")
       .size(1.5, 1.5)
-      .text(agency.name)
+      .text(agency.name.toString())
       .newLine()
 
       .style("NORMAL")
       .size(0.5, 0.5)
-      .text(agency.address)
-      .text(agency.noHp)
+      .text(agency.address.toString())
+      .text(agency.noHp.toString())
       .style("NORMAL")
       .size(0.5, 0.5)
       .drawLine()
@@ -129,7 +130,7 @@ const printStruck = (
         { text: "Tanggal", align: "LEFT", width: 0.3, style: "NORMAL" },
         { text: ":", align: "LEFT", width: 0.1, style: "NORMAL" },
         {
-          text: tanggal,
+          text: tanggal.toString(),
           align: "LEFT",
           width: 0.3,
           style: "NORMAL",
@@ -168,8 +169,10 @@ const printStruck = (
       ])
 
       .drawLine();
+    console.log(agency.name.toString());
 
     carts.forEach((item, index, arr) => {
+      console.log(item);
       printer.tableCustom([
         {
           text: "x" + item.qty,
