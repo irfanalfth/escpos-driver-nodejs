@@ -203,24 +203,24 @@ const printStruck = (
           style: "NORMAL",
         },
       ])
-      .tableCustom([
-        { text: "Pajak", align: "LEFT", width: 0.5, style: "NORMAL" },
-        {
-          text: convertToRupiah(pajak, "Rp."),
-          align: "RIGHT",
-          width: 0.5,
-          style: "NORMAL",
-        },
-      ])
-      .tableCustom([
-        { text: "Diskon", align: "LEFT", width: 0.5, style: "NORMAL" },
-        {
-          text: "-(" + convertToRupiah(diskon, "Rp.") + ")",
-          align: "RIGHT",
-          width: 0.5,
-          style: "NORMAL",
-        },
-      ])
+//       .tableCustom([
+//         { text: "Pajak", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: convertToRupiah(pajak, "Rp."),
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
+//       .tableCustom([
+//         { text: "Diskon", align: "LEFT", width: 0.5, style: "NORMAL" },
+//         {
+//           text: "-(" + convertToRupiah(diskon, "Rp.") + ")",
+//           align: "RIGHT",
+//           width: 0.5,
+//           style: "NORMAL",
+//         },
+//       ])
       .tableCustom([
         { text: "Total", align: "LEFT", width: 0.5, style: "NORMAL" },
         {
