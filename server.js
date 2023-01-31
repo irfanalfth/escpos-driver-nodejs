@@ -1202,15 +1202,15 @@ const printSalesSummary = (
           style: "NORMAL",
         },
       ])
-      .tableCustom([
-        { text: "Total Discount", align: "LEFT", width: 0.5, style: "NORMAL" },
-        {
-          text: convertToRupiah(data.total.disc),
-          align: "RIGHT",
-          width: 0.5,
-          style: "NORMAL",
-        },
-      ])
+      // .tableCustom([
+      //   { text: "Total Discount", align: "LEFT", width: 0.5, style: "NORMAL" },
+      //   {
+      //     text: convertToRupiah(data.total.disc),
+      //     align: "RIGHT",
+      //     width: 0.5,
+      //     style: "NORMAL",
+      //   },
+      // ])
       .tableCustom([
         {
           text: "Total Service Charge",
@@ -1225,20 +1225,20 @@ const printSalesSummary = (
           style: "NORMAL",
         },
       ])
-      .tableCustom([
-        {
-          text: "Total Tax",
-          align: "LEFT",
-          width: 0.5,
-          style: "NORMAL",
-        },
-        {
-          text: convertToRupiah(data.total.tax),
-          align: "RIGHT",
-          width: 0.5,
-          style: "NORMAL",
-        },
-      ])
+      // .tableCustom([
+      //   {
+      //     text: "Total Tax",
+      //     align: "LEFT",
+      //     width: 0.5,
+      //     style: "NORMAL",
+      //   },
+      //   {
+      //     text: convertToRupiah(data.total.tax),
+      //     align: "RIGHT",
+      //     width: 0.5,
+      //     style: "NORMAL",
+      //   },
+      // ])
       .tableCustom([
         {
           text: "Total Adjustment",
@@ -1258,22 +1258,22 @@ const printSalesSummary = (
       .size(0.5, 0.5)
       .drawLine()
 
-      .style("B")
-      .size(0.5, 0.5)
-      .tableCustom([
-        {
-          text: "Total",
-          align: "LEFT",
-          width: 0.5,
-          style: "B",
-        },
-        {
-          text: convertToRupiah(data.total.total),
-          align: "RIGHT",
-          width: 0.5,
-          style: "B",
-        },
-      ])
+      // .style("B")
+      // .size(0.5, 0.5)
+      // .tableCustom([
+      //   {
+      //     text: "Total",
+      //     align: "LEFT",
+      //     width: 0.5,
+      //     style: "B",
+      //   },
+      //   {
+      //     text: convertToRupiah(data.total.total),
+      //     align: "RIGHT",
+      //     width: 0.5,
+      //     style: "B",
+      //   },
+      // ])
 
       .newLine()
 
@@ -1353,9 +1353,9 @@ const printSalesSummary = (
 
         printer.drawLine();
 
-        if (index + 1 != data.summary.CASH.invoice.length) {
-          printer.newLine();
-        }
+        // if (index + 1 != data.summary.CASH.invoice.length) {
+        //   printer.newLine();
+        // }
       });
 
       printer
@@ -1363,7 +1363,7 @@ const printSalesSummary = (
         .size(0.5, 0.5)
         .tableCustom([
           {
-            text: "Total Summary by " + data.summary.CASH.title,
+            text: "Total Summary by CASH " + data.summary.CASH.title,
             align: "LEFT",
             width: 0.5,
             style: "B",
@@ -1385,7 +1385,7 @@ const printSalesSummary = (
           .size(0.5, 0.5)
           .tableCustom([
             {
-              text: "SUMMARY BY " + item.title,
+              text: "SUMMARY BY DEBIT " + item.title,
               align: "LEFT",
               width: 0.5,
               style: "B",
@@ -1465,16 +1465,16 @@ const printSalesSummary = (
 
           printer.drawLine();
 
-          if (index + 1 != item.invoice.length) {
-            printer.newLine();
-          }
+          // if (index + 1 != item.invoice.length) {
+          //   printer.newLine();
+          // }
         });
         printer
           .style("B")
           .size(0.5, 0.5)
           .tableCustom([
             {
-              text: "Total Summary by " + item.title,
+              text: "Total Summary by DEBIT " + item.title,
               align: "LEFT",
               width: 0.5,
               style: "B",
@@ -1497,7 +1497,7 @@ const printSalesSummary = (
           .size(0.5, 0.5)
           .tableCustom([
             {
-              text: "SUMMARY BY " + item.title,
+              text: "SUMMARY BY KREDIT " + item.title,
               align: "LEFT",
               width: 0.5,
               style: "B",
@@ -1577,16 +1577,16 @@ const printSalesSummary = (
 
           printer.drawLine();
 
-          if (index + 1 != item.invoice.length) {
-            printer.newLine();
-          }
+          // if (index + 1 != item.invoice.length) {
+          //   printer.newLine();
+          // }
         });
         printer
           .style("B")
           .size(0.5, 0.5)
           .tableCustom([
             {
-              text: "Total Summary by " + item.title,
+              text: "Total Summary by KREDIT " + item.title,
               align: "LEFT",
               width: 0.5,
               style: "B",
